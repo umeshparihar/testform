@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quote Video Generator</title>
+    <style>
+        body {
+            font-family: Arial;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quote Video Generator</h1>
+    <form id="quoteForm">
+        <textarea id="quote" placeholder="Enter quote" rows="3" required></textarea>
+        <input type="text" id="author" placeholder="Author name" required>
+        <select id="style">
+            <option value="purple">Purple Gradient</option>
+            <option value="blue">Blue Gradient</option>
+            <option value="orange">Orange Gradient</option>
+            <option value="green">Green Gradient</option>
+            <option value="pink">Pink Gradient</option>
+            <option value="sunset">Sunset Gradient</option>
+        </select>
+        <button type="submit">Generate Video</button>
+    </form>
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('quoteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                quote: document.getElementById('quote').value,
+                author: document.getElementById('author').value,
+                style: document.getElementById('style').value
+            };
+            
+            document.getElementById('result').innerHTML = 'Generating video...';
+            
+            try {
+                const response = await fetch('http://localhost:5678/webhook/quote-video', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    `<h3>Success!</h3>
+                     <p><a href="${result.google_drive_link}" target="_blank">View Video on Google Drive</a></p>
+                     <p>File Size: ${result.file_size}</p>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
